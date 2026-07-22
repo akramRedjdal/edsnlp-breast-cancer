@@ -25,6 +25,9 @@ from spacy.tokens import Doc
 _RESULT_ATTR = {
     "eds.negation": "negation",
     "eds.hypothesis": "hypothesis",
+    "eds.family": "family",
+    "eds.history": "history",
+    "eds.reported_speech": "reported_speech",
 }
 
 
