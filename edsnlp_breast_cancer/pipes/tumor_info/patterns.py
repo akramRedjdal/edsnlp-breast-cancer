@@ -71,7 +71,17 @@ _AREOLAR_REGION = r"(?:p[eé]ri|para|r[eé]tro)?-?\s*ar[eé]olo?(?:aires?)?(?:-m
 
 # --- associated findings ---------------------------------------------------
 
-_ASSOCIATED_INSITU_MENTION = r"composantes?\s*(?:de\s*)?(?:carcinome\s*)?in\s*situ\s*associ[eé]e?s?"
+# Real corpus phrasing is "composante [carcinomateuse/de carcinome/canalaire/
+# lobulaire] in situ" — "associé(e)" (when present) comes BEFORE "composante"
+# ("associé à une composante..."), never after "in situ", so it is not part
+# of the anchor itself. Descriptor words between "composante" and "in situ"
+# are a closed, explicit vocabulary (not a generic word-gap) since this
+# anchor otherwise has no boundary to stop a runaway match.
+_ASSOCIATED_INSITU_MENTION = (
+    r"composantes?"
+    r"(?:\s+(?:carcinomateuses?|de\s+carcinome|canalaires?|lobulaires?))*"
+    r"\s*in\s*situ"
+)
 _MICROCALCIFICATIONS_MENTION = r"(?:foyers?\s*de\s*)?(?:micro)?calcifications?"
 _DOMAIN_NEGATIVE_QUALIFIER = r"(indemnes?|r[eé]actionnelles?|radiaires?|absentes?|n[eé]gatives?)"
 
