@@ -40,6 +40,11 @@ def test_chemotherapy_phase(nlp_treatment):
         ("chimiotherapie neoadjuvante", "Neoadjuvant_chemotherapy"),
         ("chimiotherapie adjuvante", "Adjuvant_chemotherapy"),
         ("chimiotherapie en cours", "chemotherapy"),
+        # hyphenated accented spelling, very common in the real corpus —
+        # regression test for a bug where the hyphen broke the néo-
+        # alternatives and fell through to bare "adjuvante", dropping the
+        # néo- prefix and misreading this as Adjuvant instead of Neoadjuvant
+        ("Chimiothérapie néo-adjuvante", "Neoadjuvant_chemotherapy"),
     ]:
         doc = nlp_treatment(text)
         v = _by_source(doc)

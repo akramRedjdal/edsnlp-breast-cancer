@@ -50,7 +50,12 @@ _ENDOCRINE_MENTION = (
     r"|anti[\s-]?hormonale?s?|anti[\s-]?hormonal"
 )
 _ANTI_HER2_MENTION = r"anti[\s-]?her\s*-?\s*2|double\s*blocages?|double\s*blockade"
-_THERAPY_PHASE = r"(n[eéè]oadjuvante?|neoadjuvant|adjuvante?)"
+# "néo" and "adjuvant(e)" are very often hyphenated in this corpus
+# ("néo-adjuvante") — without the optional [\s-]? here, that hyphen breaks
+# the néo-adjuvant alternatives, falling through to the bare "adjuvante?"
+# branch and wrongly capturing just "adjuvante" (dropping the néo- prefix,
+# so the phase normalizer reads it as Adjuvant instead of Neoadjuvant).
+_THERAPY_PHASE = r"(n[eéè]o[\s-]?adjuvante?|neo[\s-]?adjuvant|adjuvante?)"
 
 _RADIOTHERAPY_MENTION = r"radioth[eéè]rapies?|radiotherapy"
 _RADIOTHERAPY_SITE = r"(boost|parois?|sus[\s-]?claviculaires?|creux\s*axillaire|lit\s*tumoral|tumor\s*bed)"
