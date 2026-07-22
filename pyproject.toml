@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "edsnlp-breast-cancer"
+version = "0.2.0"
+description = "EDS-NLP pipes for extracting structured data from breast cancer clinical notes (TNM, tumour size, biomarkers, histology, treatments, diagnosis, patient-level facts)"
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+requires-python = ">=3.9"
+dependencies = [
+    "edsnlp>=0.22.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.entry-points.edsnlp_factories]
+"breast_cancer.biomarkers" = "edsnlp_breast_cancer.pipes.biomarkers.factory:create_component"
+"breast_cancer.patient_info" = "edsnlp_breast_cancer.pipes.patient_info.factory:create_component"
+"breast_cancer.diagnosis" = "edsnlp_breast_cancer.pipes.diagnosis.factory:create_component"
+"breast_cancer.treatment" = "edsnlp_breast_cancer.pipes.treatment.factory:create_component"
+"breast_cancer.side_findings" = "edsnlp_breast_cancer.pipes.side_findings.factory:create_component"
+"breast_cancer.tnm" = "edsnlp_breast_cancer.pipes.tnm.factory:create_component"
+"breast_cancer.tumor_size" = "edsnlp_breast_cancer.pipes.tumor_size.factory:create_component"
+"breast_cancer.tumor_info" = "edsnlp_breast_cancer.pipes.tumor_info.factory:create_component"
+
+[tool.hatch.build.targets.wheel]
+packages = ["edsnlp_breast_cancer"]
