@@ -8,19 +8,41 @@ test_patient_info.py's negation spot-checks) — it requires enough preceding
 text/sentences, which is why this test builds a long synthetic note instead
 of a short string.
 """
-import os
-
 import edsnlp
 
 from edsnlp_breast_cancer.qualifiers import apply_qualifiers_by_sentence
 
-# This is the real excerpt that reproduced the drop during manual
-# investigation (a short synthetic filler-sentence text was tried first and
-# did NOT reproduce it — the trigger is specific to real note structure, not
-# just raw sentence count). Kept verbatim rather than re-guessed.
-_FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "long_note.txt")
-with open(_FIXTURE_PATH, encoding="utf-8") as _f:
-    _LONG_NOTE = _f.read()
+# Synthetic (fabricated, no real patient data) multi-paragraph note, long
+# enough to reproduce the drop during manual investigation (a short
+# filler-sentence text was tried first and did NOT reproduce it — the
+# trigger is specific to real note structure, not just raw sentence count).
+# Kept inline (not a separate .txt file) by policy: no text-file fixtures
+# in this repo, even synthetic ones.
+_LONG_NOTE = (
+    "Antécédents : patiente ménopausée depuis 8 ans. Antécédent de cancer du "
+    "poumon traité. Suivie pour hypertension artérielle et diabète. Bonnet C. "
+    "Pas de mutation BRCA connue dans la famille.\n\n"
+    "Bilan initial : mammographie et échographie mammaire bilatérale réalisées "
+    "le 12/01/2023. Masse tumorale de 23 x 18 mm du quadrant supero-externe du "
+    "sein droit, Bi-rads 5. Ganglion axillaire droit de 15 mm suspect, "
+    "Bi-rads 4c. IRM mammaire complémentaire confirmant la lésion. Examen "
+    "clinique retrouve une masse palpable. PET-scan au FDG montrant un "
+    "hypermétabolisme axillaire.\n\n"
+    "Microbiopsie du 15/01/2023 : carcinome canalaire infiltrant, grade "
+    "histopronostique 2, SBR grade 2. RE 90%, RP 60%, HER2 score 0, Ki67 20%. "
+    "Cytoponction ganglionnaire axillaire positive, en faveur d'une métastase "
+    "ganglionnaire axillaire. Composante in situ associée étendue. Présence "
+    "de microcalcifications associées. Emboles vasculaires sanguins "
+    "présents.\n\n"
+    "Bilan d'extension : classification cTNM : cT2 N1a M0. Oncotype DX score "
+    "22. Réponse partielle après la première cure. Pas de récidive à ce "
+    "jour.\n\n"
+    "Proposition thérapeutique : chimiothérapie néoadjuvante puis "
+    "tumorectomie avec ganglion sentinelle et curage axillaire. "
+    "Radiothérapie du lit tumoral prévue. Hormonothérapie adjuvante à "
+    "discuter selon les récepteurs. Traitement anti-HER2 non indiqué "
+    "(HER2 négatif).\n"
+)
 
 
 def _nlp_with_qualifiers():

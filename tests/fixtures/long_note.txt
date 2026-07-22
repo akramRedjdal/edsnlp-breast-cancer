@@ -1,9 +1,0 @@
-Antécédents : patiente ménopausée depuis 8 ans. Antécédent de cancer du poumon traité. Suivie pour hypertension artérielle et diabète. Bonnet C. Pas de mutation BRCA connue dans la famille.
-
-Bilan initial : mammographie et échographie mammaire bilatérale réalisées le 12/01/2023. Masse tumorale de 23 x 18 mm du quadrant supero-externe du sein droit, Bi-rads 5. Ganglion axillaire droit de 15 mm suspect, Bi-rads 4c. IRM mammaire complémentaire confirmant la lésion. Examen clinique retrouve une masse palpable. PET-scan au FDG montrant un hypermétabolisme axillaire.
-
-Microbiopsie du 15/01/2023 : carcinome canalaire infiltrant, grade histopronostique 2, SBR grade 2. RE 90%, RP 60%, HER2 score 0, Ki67 20%. Cytoponction ganglionnaire axillaire positive, en faveur d'une métastase ganglionnaire axillaire. Composante in situ associée étendue. Présence de microcalcifications associées. Emboles vasculaires sanguins présents.
-
-Bilan d'extension : classification cTNM : cT2 N1a M0. Oncotype DX score 22. Réponse partielle après la première cure. Pas de récidive à ce jour.
-
-Proposition thérapeutique : chimiothérapie néoadjuvante puis tumorectomie avec ganglion sentinelle et curage axillaire. Radiothérapie du lit tumoral prévue. Hormonothérapie adjuvante à discuter selon les récepteurs. Traitement anti-HER2 non indiqué (HER2 négatif).
