@@ -81,6 +81,7 @@ def _normalize_fish(raw: Optional[str]) -> Optional[str]:
 _NORMALIZERS: dict = {
     "ER": _normalize_percent,
     "PR": _normalize_percent,
+    "RH_COMBINED": _normalize_percent,
     "HER2": _normalize_her2,
     "KI67": _normalize_percent,
     "FISH": _normalize_fish,
@@ -94,7 +95,8 @@ class BreastBiomarkersMatcher:
     with two extensions:
 
     - ``span._.source``: which biomarker matched (``"ER"``, ``"PR"``,
-      ``"HER2"``, ``"KI67"`` or ``"FISH"``)
+      ``"RH_COMBINED"`` — "RH"/"récepteurs hormonaux", meaning BOTH ER and
+      PR at once, see ``patterns.py`` — ``"HER2"``, ``"KI67"`` or ``"FISH"``)
     - ``span._.biomarker_value``: the normalised value — an int in [0, 100]
       for ER/PR/Ki67, one of ``Her2IHC0``..``Her2IHC3Plus`` for HER2,
       ``"positive"``/``"negative"`` for FISH, or ``None`` if the nearby
@@ -136,19 +138,35 @@ class BreastBiomarkersMatcher:
         spans_key: str = "biomarkers",
     ):
         self.spans_key = spans_key
-        self._matcher = ContextualMatcher(
-            nlp,
-            name=f"{name}_contextual_matcher",
-            patterns=PATTERNS,
-            label="biomarker",
-            attr="NORM",
-            span_setter={"ents": False, spans_key: True},
-        )
+        # One ContextualMatcher PER marker, each with its OWN span label
+        # (not one shared instance / shared "biomarker" label across all 5
+        # patterns): spaCy's Span._.* extension storage is keyed by
+        # (start, end, label) — NOT by Python object identity — so two
+        # spans from different markers landing on the exact same character
+        # range (e.g. "RH" legitimately anchors both ER and PR:
+        # "Récepteurs Hormonaux" covers both hormone receptors at once)
+        # would silently overwrite each other's `_.source`/`_.biomarker_value`
+        # if they shared one label. Giving each marker its own label (and
+        # thus its own independent matcher, mirroring how the original
+        # regex-per-marker code ran fully independent passes too) keeps
+        # them addressable separately even when co-located.
+        self._matchers = [
+            ContextualMatcher(
+                nlp,
+                name=f"{name}_{pattern['source']}_contextual_matcher",
+                patterns=[pattern],
+                label=pattern["source"],
+                attr="NORM",
+                span_setter={"ents": False, spans_key: True},
+            )
+            for pattern in PATTERNS
+        ]
         if not Span.has_extension("biomarker_value"):
             Span.set_extension("biomarker_value", default=None)
 
     def __call__(self, doc: Doc) -> Doc:
-        doc = self._matcher(doc)
+        for matcher in self._matchers:
+            doc = matcher(doc)
         normalize: Callable
         for span in doc.spans.get(self.spans_key, []):
             normalize = _NORMALIZERS.get(span._.source)

@@ -16,14 +16,22 @@ if it were a percentage).
 
 _ER_MENTION = (
     r"r[eéè]c[eéè]pteurs?\s*(?:aux\s*)?oestrog[eè]nes?"
-    r"|r[eéè]c[eéè]pteurs?\s*hormonaux"
     r"|\bre\b|\bro\b|\br0\b"
 )
 _PR_MENTION = (
     r"r[eéè]c[eéè]pteurs?\s*(?:[àa]\s*la\s*)?prog[eéè]st[eéè]rones?"
-    r"|r[eéè]c[eéè]pteurs?\s*hormonaux"
-    r"|\brh\b|\brp\b"
+    r"|\brp\b"
 )
+# "RH" ("Récepteurs Hormonaux") and the spelled-out "récepteurs hormonaux"
+# cover BOTH estrogen and progesterone receptors at once — kept as its own
+# source (not folded into _ER_MENTION/_PR_MENTION) because spaCy's Span
+# extension storage is keyed by character position alone: two spans landing
+# on the exact same range cannot independently hold different `_.source`/
+# `_.biomarker_value` values, so ER and PR can never both anchor on the
+# literal same "RH" text. Downstream (this pipe's own normalizer, and any
+# consumer reading biomarker spans) must treat source == "RH_COMBINED" as
+# evidence for BOTH ER and PR with the same value.
+_RH_COMBINED_MENTION = r"r[eéè]c[eéè]pteurs?\s*hormonaux|\brh\b"
 _HER2_MENTION = r"\bher\s*-?\s*2\b|\bc[-\s]?erbb?[-\s]?2\b"
 _KI67_MENTION = r"\bki\s*-?\s*67\b"
 _FISH_MENTION = r"\bfish\b"
@@ -75,6 +83,15 @@ PATTERNS = [
     {
         "source": "PR",
         "regex": [_PR_MENTION],
+        "regex_attr": "NORM",
+        "exclude": _YEAR_EXCLUDE,
+        "assign": [
+            {"name": "value", "regex": _PERCENT_VALUE, "window": "words[0:6]", "reduce_mode": "keep_first"},
+        ],
+    },
+    {
+        "source": "RH_COMBINED",
+        "regex": [_RH_COMBINED_MENTION],
         "regex_attr": "NORM",
         "exclude": _YEAR_EXCLUDE,
         "assign": [
