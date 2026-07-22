@@ -158,6 +158,7 @@ class BreastBiomarkersMatcher:
                 label=pattern["source"],
                 attr="NORM",
                 span_setter={"ents": False, spans_key: True},
+                include_assigned=True,
             )
             for pattern in PATTERNS
         ]

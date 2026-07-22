@@ -87,19 +87,32 @@ class TreatmentMatcher:
         spans_key: str = "treatment",
     ):
         self.spans_key = spans_key
-        self._matcher = ContextualMatcher(
-            nlp,
-            name=f"{name}_contextual_matcher",
-            patterns=PATTERNS,
-            label="treatment",
-            attr="NORM",
-            span_setter={"ents": False, spans_key: True},
-        )
+        # One matcher per source (own label), not one shared instance — see
+        # breast_cancer.biomarkers for why (spaCy's Span extension storage
+        # is keyed by character position; two same-labelled spans on the
+        # identical text range would silently overwrite each other's
+        # `_.source`/`_.treatment_value`). `include_assigned=True` extends
+        # each matched span to also cover its assigned detail text (e.g. a
+        # radiotherapy span covers "radiotherapie du lit tumoral", not just
+        # "radiotherapie").
+        self._matchers = [
+            ContextualMatcher(
+                nlp,
+                name=f"{name}_{pattern['source']}_contextual_matcher",
+                patterns=[pattern],
+                label=pattern["source"],
+                attr="NORM",
+                span_setter={"ents": False, spans_key: True},
+                include_assigned=True,
+            )
+            for pattern in PATTERNS
+        ]
         if not Span.has_extension("treatment_value"):
             Span.set_extension("treatment_value", default=None)
 
     def __call__(self, doc: Doc) -> Doc:
-        doc = self._matcher(doc)
+        for matcher in self._matchers:
+            doc = matcher(doc)
         for span in doc.spans.get(self.spans_key, []):
             source = span._.source
             if source in _DIRECT_VALUE:
